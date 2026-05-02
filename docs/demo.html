@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>优学课堂 - 终极完整版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=PingFang+SC:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #F7F9FC;
+            user-select: none;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .vip-gradient {
+            background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+        }
+        
+        .vip-tag {
+            background: linear-gradient(90deg, #4A4A4A 0%, #2D2D2D 100%);
+            color: #F8B500;
+        }
+
+        .nav-active { color: #3B82F6; font-weight: 600; }
+
+        .page-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .page-container.active {
+            display: flex;
+        }
+
+        .float-exchange {
+            position: fixed;
+            right: 16px;
+            bottom: 100px;
+            width: 50px;
+            height: 50px;
+            background: #F8B500;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(248, 181, 0, 0.4);
+            z-index: 40;
+            border: 2px solid #fff;
+        }
+
+        .topic-card {
+            background: linear-gradient(to bottom right, #ffffff, #f0f7ff);
+        }
+
+        /* 骨架屏动画 */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- 1. 首页 (同步课) -->
+    <div id="homePage" class="page-container active flex-1 overflow-hidden">
+        <header class="bg-white px-4 py-2 flex flex-col shrink-0 pt-[env(safe-area-inset-top)]">
+            <div class="flex items-center justify-between mb-2">
+                <div onclick="showVersionPicker()" class="flex items-center bg-gray-100 px-3 py-1 rounded-full active:opacity-70 transition-opacity">
+                    <span id="currentVersion" class="text-xs font-bold text-gray-700">人教版 · 高一上</span>
+                    <i class="fas fa-caret-down ml-1 text-gray-400 text-[10px]"></i>
+                </div>
+                <div class="vip-tag px-3 py-1 rounded-full text-[10px] font-bold flex items-center shadow-sm">
+                    <i class="fas fa-crown mr-1"></i> VIP永久免费
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="flex-1 bg-gray-100 rounded-lg flex items-center px-3 py-2">
+                    <i class="fas fa-search text-gray-400 text-sm mr-2"></i>
+                    <input type="text" placeholder="搜索课本章节、知识点" class="bg-transparent text-sm w-full outline-none">
+                </div>
+                <div class="relative">
+                    <i class="far fa-calendar-check text-xl text-blue-600"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto no-scrollbar pb-24">
+            <!-- 轮播 Banner -->
+            <section class="p-4">
+                <div class="vip-gradient w-full aspect-[21/9] rounded-2xl overflow-hidden relative shadow-md">
+                    <div class="absolute inset-0 p-5 flex flex-col justify-center">
+                        <div class="bg-black/80 self-start px-2 py-0.5 rounded text-[10px] text-yellow-400 mb-2 font-bold uppercase tracking-wider">Exclusive</div>
+                        <h3 class="text-gray-900 text-xl font-black italic">同步视频课程</h3>
+                        <p class="text-gray-800 text-xs mt-1 font-medium">全教材覆盖 · 课后重点详讲</p>
+                    </div>
+                    <img src="https://api.dicebear.com/7.x/shapes/svg?seed=1&fillColor=f8b500&backgroundColor=fceabb" class="absolute right-[-10%] bottom-[-20%] w-40 opacity-20" alt="decoration">
+                </div>
+            </section>
+
+            <!-- 完整学科分类 -->
+            <div class="grid grid-cols-5 gap-2 px-4 mb-6 text-center">
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 mb-1.5 shadow-sm active:scale-90 transition-transform">语</div>
+                    <span class="text-[10px] text-gray-600 font-medium">语文</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 mb-1.5 shadow-sm active:scale-90 transition-transform">数</div>
+                    <span class="text-[10px] text-gray-600 font-medium">数学</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500 mb-1.5 shadow-sm active:scale-90 transition-transform">英</div>
+                    <span class="text-[10px] text-gray-600 font-medium">英语</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 mb-1.5 shadow-sm active:scale-90 transition-transform">物</div>
+                    <span class="text-[10px] text-gray-600 font-medium">物理</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 mb-1.5 shadow-sm active:scale-90 transition-transform">化</div>
+                    <span class="text-[10px] text-gray-600 font-medium">化学</span>
+                </div>
+            </div>
+
+            <!-- 学习进度卡片 -->
+            <div class="mx-4 mb-6 bg-white rounded-2xl p-4 flex items-center justify-between border border-gray-100 shadow-sm relative overflow-hidden">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                <div>
+                    <div class="flex items-center text-[10px] text-gray-400 mb-1">
+                        <i class="far fa-clock mr-1"></i> 2小时前学过
+                    </div>
+                    <h4 class="font-bold text-sm text-gray-800">数学：集合的含义与表示</h4>
+                    <p class="text-[10px] text-blue-500 mt-0.5 font-medium">已学 45% · 继续努力</p>
+                </div>
+                <button onclick="openPlayer()" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-100 active:scale-95 transition-transform">继续</button>
+            </div>
+
+            <!-- 同步课详细列表 -->
+            <section class="px-4 space-y-4">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="font-bold text-gray-900">同步精讲</h3>
+                    <span class="text-[10px] text-blue-500">查看全部</span>
+                </div>
+                
+                <div onclick="openPlayer()" class="bg-white rounded-2xl overflow-hidden shadow-sm flex border border-gray-100 active:bg-gray-50 transition-colors">
+                    <div class="w-32 h-24 shrink-0 relative skeleton">
+                        <div class="absolute top-0 left-0 vip-tag px-1.5 py-0.5 text-[9px] rounded-br-lg font-bold">VIP 免费</div>
+                    </div>
+                    <div class="flex-1 p-3 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800 line-clamp-2">【同步】高一数学人教A版：集合的概念与运算法则</h4>
+                            <p class="text-[10px] text-gray-400 mt-1 italic">同步基础 · 难度：★★</p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-blue-600 font-bold text-sm">FREE</span>
+                            <span class="text-[9px] text-gray-400"><i class="far fa-eye mr-1"></i>1.2w</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div onclick="openPlayer()" class="bg-white rounded-2xl overflow-hidden shadow-sm flex border border-gray-100 active:bg-gray-50 transition-colors">
+                    <div class="w-32 h-24 shrink-0 relative skeleton">
+                        <div class="absolute top-0 left-0 vip-tag px-1.5 py-0.5 text-[9px] rounded-br-lg font-bold">VIP 免费</div>
+                    </div>
+                    <div class="flex-1 p-3 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800 line-clamp-2">【同步】高一英语必修一：Unit 1 核心词汇讲解</h4>
+                            <p class="text-[10px] text-gray-400 mt-1 italic">听力同步 · 难度：★</p>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-blue-600 font-bold text-sm">FREE</span>
+                            <span class="text-[9px] text-gray-400"><i class="far fa-eye mr-1"></i>8k</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 首页浮动兑换 -->
+        <div onclick="showExchangeModal()" class="float-exchange animate-bounce">
+            <i class="fas fa-gift text-lg"></i>
+            <span>兑换</span>
+        </div>
+    </div>
+
+    <!-- 2. 专题课页面 -->
+    <div id="topicPage" class="page-container flex-1 overflow-hidden">
+        <header class="bg-white px-4 py-4 shrink-0 pt-[env(safe-area-inset-top)] border-b border-gray-50">
+            <h2 class="text-xl font-bold text-gray-900">核心专题提分</h2>
+            <div class="flex items-center space-x-2 mt-1">
+                <span class="w-4 h-1 bg-blue-500 rounded-full"></span>
+                <p class="text-[10px] text-gray-400">攻克重难点 · 针对性强化练习</p>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto no-scrollbar pb-24 bg-gray-50/50">
+            <div class="flex space-x-3 px-4 py-4 overflow-x-auto no-scrollbar">
+                <button class="bg-blue-600 text-white px-5 py-2 rounded-full text-xs font-bold shrink-0 shadow-md shadow-blue-100">全部专题</button>
+                <button class="bg-white text-gray-500 px-5 py-2 rounded-full text-xs shrink-0 border border-gray-100 font-medium">高一数学</button>
+                <button class="bg-white text-gray-500 px-5 py-2 rounded-full text-xs shrink-0 border border-gray-100 font-medium">高一英语</button>
+                <button class="bg-white text-gray-500 px-5 py-2 rounded-full text-xs shrink-0 border border-gray-100 font-medium">高一化学</button>
+            </div>
+
+            <div class="px-4 space-y-5">
+                <!-- 专题卡片 1 -->
+                <div class="topic-card rounded-2xl overflow-hidden shadow-sm border border-blue-50 active:scale-[0.98] transition-transform">
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-bold">数学 · 函数模块</div>
+                            <div class="vip-tag px-2.5 py-1 text-[10px] rounded-lg font-bold">VIP 免费</div>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 leading-tight">《二次函数与幂函数核心模型总结》</h3>
+                        <p class="text-xs text-gray-500 mt-3 leading-relaxed">涵盖12种核心题型解析，包含图像平移、最值问题及压轴技巧，助你彻底攻克函数关。</p>
+                        <div class="mt-5 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-[10px] text-gray-400"><i class="fas fa-video mr-1"></i>12 课时</span>
+                                <span class="text-[10px] text-gray-400"><i class="fas fa-user-graduate mr-1"></i>4210 人</span>
+                            </div>
+                            <button onclick="openPlayer()" class="bg-gray-900 text-yellow-400 px-5 py-2 rounded-xl text-[10px] font-bold">立即开启</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 专题卡片 2 -->
+                <div class="topic-card rounded-2xl overflow-hidden shadow-sm border border-purple-50 active:scale-[0.98] transition-transform">
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-purple-100 text-purple-600 px-3 py-1 rounded-lg text-[10px] font-bold">英语 · 语法专项</div>
+                            <div class="vip-tag px-2.5 py-1 text-[10px] rounded-lg font-bold">VIP 免费</div>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 leading-tight">《定语从句保分计划：从入门到精通》</h3>
+                        <p class="text-xs text-gray-500 mt-3 leading-relaxed">理清关系代词与关系副词的使用场景，配套历年真题及易错陷阱避坑指南。</p>
+                        <div class="mt-5 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-[10px] text-gray-400"><i class="fas fa-video mr-1"></i>15 课时</span>
+                                <span class="text-[10px] text-gray-400"><i class="fas fa-user-graduate mr-1"></i>3382 人</span>
+                            </div>
+                            <button onclick="openPlayer()" class="bg-gray-900 text-yellow-400 px-5 py-2 rounded-xl text-[10px] font-bold">立即开启</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 3. 学习库页面 (资产管理 + 进度列表) -->
+    <div id="libraryPage" class="page-container flex-1 bg-gray-50 overflow-hidden">
+        <header class="bg-white p-4 pt-[env(safe-area-inset-top)] shrink-0">
+            <h2 class="text-xl font-bold text-gray-900">我的学习库</h2>
+            <div class="grid grid-cols-4 gap-4 mt-6">
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center mb-1.5"><i class="fas fa-history"></i></div>
+                    <span class="text-[10px] text-gray-500">历史</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center mb-1.5"><i class="fas fa-download"></i></div>
+                    <span class="text-[10px] text-gray-500">下载</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-1.5"><i class="fas fa-heart"></i></div>
+                    <span class="text-[10px] text-gray-500">收藏</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center mb-1.5"><i class="fas fa-file-alt"></i></div>
+                    <span class="text-[10px] text-gray-500">笔记</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24 space-y-4">
+            <h3 class="text-sm font-bold text-gray-900">继续学习</h3>
+            
+            <div class="bg-white rounded-2xl p-3 flex items-center border border-gray-100 shadow-sm">
+                <div class="w-20 h-14 bg-gray-100 rounded-lg mr-3 skeleton"></div>
+                <div class="flex-1">
+                    <h4 class="text-xs font-bold text-gray-800 line-clamp-1">数学：集合间的基本关系</h4>
+                    <div class="w-full bg-gray-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div class="bg-blue-500 w-[60%] h-full"></div>
+                    </div>
+                </div>
+                <i class="fas fa-play-circle text-blue-500 text-xl ml-3"></i>
+            </div>
+
+            <div class="bg-white rounded-2xl p-3 flex items-center border border-gray-100 shadow-sm">
+                <div class="w-20 h-14 bg-gray-100 rounded-lg mr-3 skeleton"></div>
+                <div class="flex-1">
+                    <h4 class="text-xs font-bold text-gray-800 line-clamp-1">英语：高中词汇精析 Lesson 3</h4>
+                    <div class="w-full bg-gray-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div class="bg-blue-500 w-[20%] h-full"></div>
+                    </div>
+                </div>
+                <i class="fas fa-play-circle text-blue-500 text-xl ml-3"></i>
+            </div>
+        </main>
+    </div>
+
+    <!-- 4. 我的页面 (权益中心) -->
+    <div id="userPage" class="page-container flex-1 bg-gray-50 overflow-y-auto no-scrollbar">
+        <div class="bg-white p-6 pb-12 rounded-b-[40px] shadow-sm relative overflow-hidden">
+            <div class="absolute right-[-20px] top-[-20px] w-40 h-40 bg-blue-50 rounded-full opacity-50"></div>
+            
+            <div class="flex items-center space-x-4 pt-8 relative z-10">
+                <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold border-4 border-white shadow-lg">学</div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">优学用户_7829</h3>
+                    <div class="flex items-center space-x-2 mt-0.5">
+                        <span class="text-[10px] text-gray-400 font-mono">ID: 88291032</span>
+                        <span class="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-[8px]">普通用户</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIP兑换卡片：核心位置 -->
+            <div onclick="showExchangeModal()" class="mt-8 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white border border-yellow-200 p-4 rounded-3xl flex items-center justify-between active:scale-95 transition-transform shadow-sm relative z-10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-yellow-400 rounded-2xl flex items-center justify-center text-white shadow-md">
+                        <i class="fas fa-crown text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-yellow-900">VIP 激活码兑换</p>
+                        <p class="text-[10px] text-yellow-700/70">兑换激活码，尊享全站免费学</p>
+                    </div>
+                </div>
+                <div class="bg-yellow-400 text-white px-3 py-1.5 rounded-xl text-[10px] font-bold">去兑换</div>
+            </div>
+        </div>
+
+        <div class="px-4 -mt-4 relative z-20 space-y-4 pb-24">
+            <!-- 功能菜单 -->
+            <div class="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between p-4 active:bg-gray-50 rounded-2xl transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center"><i class="fas fa-shield-alt text-sm"></i></div>
+                        <span class="text-sm font-medium">账号与安全</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+                <div class="flex items-center justify-between p-4 active:bg-gray-50 rounded-2xl transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-emerald-50 text-emerald-500 rounded-lg flex items-center justify-center"><i class="fas fa-envelope-open-text text-sm"></i></div>
+                        <span class="text-sm font-medium">消息通知</span>
+                    </div>
+                    <span class="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full">2</span>
+                </div>
+                <div class="flex items-center justify-between p-4 active:bg-gray-50 rounded-2xl transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center"><i class="fas fa-question-circle text-sm"></i></div>
+                        <span class="text-sm font-medium">帮助与在线客服</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- 退出登录 -->
+            <button class="w-full py-4 text-red-500 text-sm font-bold bg-white rounded-3xl shadow-sm border border-red-50 active:bg-red-50 transition-colors">退出当前账号</button>
+        </div>
+    </div>
+
+    <!-- 底部导航 (Tab Bar) -->
+    <nav class="fixed bottom-0 left-0 right-0 glass-nav border-t border-gray-100 flex justify-around py-3 z-50">
+        <button onclick="switchTab('homePage', this)" class="flex flex-col items-center nav-active group">
+            <i class="fas fa-book-open text-xl mb-1 group-active:scale-110 transition-transform"></i>
+            <span class="text-[10px]">同步课</span>
+        </button>
+        <button onclick="switchTab('topicPage', this)" class="flex flex-col items-center text-gray-400 group">
+            <i class="fas fa-fire text-xl mb-1 group-active:scale-110 transition-transform"></i>
+            <span class="text-[10px]">专题课</span>
+        </button>
+        <button onclick="switchTab('libraryPage', this)" class="flex flex-col items-center text-gray-400 group">
+            <i class="fas fa-folder text-xl mb-1 group-active:scale-110 transition-transform"></i>
+            <span class="text-[10px]">学习库</span>
+        </button>
+        <button onclick="switchTab('userPage', this)" class="flex flex-col items-center text-gray-400 group">
+            <i class="fas fa-user-circle text-xl mb-1 group-active:scale-110 transition-transform"></i>
+            <span class="text-[10px]">我的</span>
+        </button>
+    </nav>
+
+    <!-- 全局组件：兑换弹窗 -->
+    <div id="exchangeModal" class="fixed inset-0 bg-black/70 z-[300] hidden items-center justify-center p-8 backdrop-blur-sm">
+        <div class="bg-white w-full rounded-[40px] overflow-hidden animate-pop-in relative">
+            <div class="vip-gradient p-8 text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <i class="fas fa-crown text-5xl text-white mb-3 shadow-sm"></i>
+                    <h3 class="text-xl font-bold text-gray-900">VIP 激活兑换</h3>
+                    <p class="text-xs text-gray-800 opacity-70">请输入 12 位课程礼品激活码</p>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center opacity-10">
+                    <i class="fas fa-crown text-[150px]"></i>
+                </div>
+            </div>
+            <div class="p-8">
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <input type="text" placeholder="ABCD-EFGH-IJKL" class="w-full bg-transparent border-none text-center font-mono text-xl tracking-[0.2em] outline-none focus:ring-0 text-gray-800 placeholder:text-gray-300">
+                </div>
+                <button onclick="handleExchange()" class="w-full bg-gray-900 text-yellow-400 py-4 rounded-2xl font-bold mt-6 shadow-xl active:scale-95 transition-all">立即激活权益</button>
+                <button onclick="hideExchangeModal()" class="w-full text-gray-400 text-xs py-4 text-center">稍后再说</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 播放器预览 -->
+    <div id="playerPage" class="fixed inset-0 bg-white z-[500] translate-y-full transition-transform duration-500 ease-in-out flex flex-col">
+        <div class="bg-black aspect-video flex items-center justify-center relative shadow-2xl">
+            <button onclick="closePlayer()" class="absolute top-6 left-6 w-10 h-10 bg-black/20 rounded-full flex items-center justify-center text-white backdrop-blur-md">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="text-center">
+                <i class="fas fa-play text-white text-5xl opacity-80 mb-4 animate-pulse"></i>
+                <p class="text-white/50 text-xs">视频正在加载...</p>
+            </div>
+        </div>
+        <div class="p-6">
+            <div class="flex justify-between items-start">
+                <h2 class="text-lg font-bold text-gray-900">1.1.1 集合的含义与表示方法</h2>
+                <i class="far fa-star text-gray-400 text-xl"></i>
+            </div>
+            <p class="text-xs text-gray-400 mt-2 italic leading-relaxed">主讲：王老师 · 优学特聘名师<br>人教A版高一上数学同步课</p>
+            <div class="mt-8 grid grid-cols-2 gap-4">
+                <button class="bg-gray-100 py-3 rounded-xl text-xs font-bold"><i class="fas fa-download mr-2"></i>下载讲义</button>
+                <button class="bg-gray-100 py-3 rounded-xl text-xs font-bold"><i class="fas fa-pencil-alt mr-2"></i>随堂笔记</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 导航切换
+        function switchTab(pageId, el) {
+            document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('nav button').forEach(b => {
+                b.classList.remove('nav-active');
+                b.classList.add('text-gray-400');
+            });
+            el.classList.add('nav-active');
+            el.classList.remove('text-gray-400');
+        }
+
+        // 兑换逻辑
+        function showExchangeModal() {
+            document.getElementById('exchangeModal').classList.remove('hidden');
+            document.getElementById('exchangeModal').classList.add('flex');
+        }
+
+        function hideExchangeModal() {
+            document.getElementById('exchangeModal').classList.add('hidden');
+            document.getElementById('exchangeModal').classList.remove('flex');
+        }
+
+        function handleExchange() {
+            const btn = event.currentTarget;
+            btn.innerText = '激活中...';
+            setTimeout(() => {
+                showToast('兑换成功！VIP已生效');
+                btn.innerText = '立即激活权益';
+                hideExchangeModal();
+            }, 1500);
+        }
+
+        // 通用方法
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-2xl text-xs z-[600] shadow-2xl animate-pop-in';
+            t.innerHTML = `<i class="fas fa-check-circle text-green-400 mr-2"></i> ${msg}`;
+            document.body.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transition = 'opacity 0.5s';
+                setTimeout(() => t.remove(), 500);
+            }, 2000);
+        }
+
+        function openPlayer() { document.getElementById('playerPage').classList.remove('translate-y-full'); }
+        function closePlayer() { document.getElementById('playerPage').classList.add('translate-y-full'); }
+        function showVersionPicker() { showToast('正在加载教材版本列表'); }
+    </script>
+
+    <style>
+        @keyframes pop-in { 
+            from { transform: translate(-50%, 20px) scale(0.9); opacity: 0; } 
+            to { transform: translate(-50%, 0) scale(1); opacity: 1; } 
+        }
+        #exchangeModal .animate-pop-in {
+            animation: pop-modal 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes pop-modal {
+            from { transform: scale(0.8) translateY(40px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+    </style>
+</body>
+</html>
