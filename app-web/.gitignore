@@ -4,5 +4,6 @@ dist
 .env*
 !.env.local.example
 !.env.production.example
+*.tsbuildinfo
 *.log
 .DS_Store
